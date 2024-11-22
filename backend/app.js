@@ -10,8 +10,7 @@ const server = http.createServer(app);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
-const session = require('cookie-session');
-const ensureAuthenticated = require("./middlewares/authMiddleware");
+const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/users');
@@ -20,8 +19,13 @@ const PORT = process.env.PORT || 8080;
 
 app.use(session({
   secret: 'goatismonkey',
-  maxAge: 1000 * 60 * 60 * 24 * 30,
-  httpOnly: true,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  },
 }));
 
 app.use(cors({
@@ -48,14 +52,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.error('Error connecting to MongoDB:', err);
-  });
-
+mongoose.connect(process.env.MONGO_URL);
 
 app.post('/signup', async (req, res) => {
   try {
