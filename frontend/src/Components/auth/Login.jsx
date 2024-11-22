@@ -22,9 +22,11 @@ function Login() {
     axios
       .post("http://localhost:8080/login", loginData, { withCredentials: true })
       .then((response) => {
-        console.log(response.data);
-        navigate("/dashboard");
-        window.location.reload();
+        if (response.data) {
+          console.log(response.data);
+          navigate("/dashboard");
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.error("Login failed:", error);
