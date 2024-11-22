@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 
-const socket = io.connect("http://localhost:8080");
+// const socket = io.connect("http://localhost:8080");
+const socket = io.connect("https://echo-1l8d.onrender.com");
 
 const MeetingPage = () => {
   const { roomId } = useParams();

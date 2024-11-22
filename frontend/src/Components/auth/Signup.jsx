@@ -21,7 +21,8 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/signup", signupData);
+      // await axios.post("http://localhost:8080/signup", signupData);
+      await axios.post("https://echo-1l8d.onrender.com/signup", signupData);
       navigate("/login");
     } catch (error) {
       console.error("Signup failed:", error);

@@ -9,7 +9,8 @@ function Navbar() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/user", { withCredentials: true })
+      // .get("http://localhost:8080/api/user", { withCredentials: true })
+      .get("https://echo-1l8d.onrender.com/api/user", { withCredentials: true })
       .then((response) => {
         setUser(response.data);
       })
@@ -20,7 +21,10 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:8080/logout", {
+      // await axios.get("http://localhost:8080/logout", {
+      //   withCredentials: true,
+      // });
+      await axios.get("https://echo-1l8d.onrender.com/logout", {
         withCredentials: true,
       });
       setUser(null);

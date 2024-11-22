@@ -22,7 +22,10 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/user", { withCredentials: true })
+      // .get("http://localhost:8080/api/user", { withCredentials: true })
+      .get("https://echo-1l8d.onrender.com/api/user", {
+        withCredentials: true,
+      })
       .then(() => setIsAuthenticated(true))
       .catch(() => navigate("/login"));
   }, [navigate]);

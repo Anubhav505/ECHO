@@ -9,7 +9,10 @@ const Dashboard = () => {
 
   const handleStartNow = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/create-room");
+      // const response = await axios.get("http://localhost:8080/api/create-room");
+      const response = await axios.get(
+        "https://echo-1l8d.onrender.com/api/create-room"
+      );
       const roomId = response.data.roomId;
       navigate(`/meeting/${roomId}`);
     } catch (error) {
@@ -29,7 +32,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <div className="flex-1 container mx-auto p-4">
         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
-          Welcome to Your Zoom Dashboard
+          Welcome to Your ECHO Dashboard
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
