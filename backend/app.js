@@ -17,6 +17,7 @@ const User = require('./models/users');
 
 const PORT = process.env.PORT || 8080;
 
+// Session middleware (ensure it's before passport middleware)
 app.use(session({
   secret: 'goatismonkey',
   resave: false,
@@ -28,45 +29,59 @@ app.use(session({
   },
 }));
 
+// CORS setup
 app.use(cors({
-  // origin: 'http://localhost:5173',
-  origin: 'https://echo-fj1l.onrender.com',
+  origin: 'https://echo-fj1l.onrender.com',  // Update with your front-end URL
   credentials: true,
 }));
 
+// Socket.io setup
 const io = new Server(server, {
   cors: {
-    // origin: "http://localhost:5173",
-    origin: 'https://echo-fj1l.onrender.com',
+    origin: 'https://echo-fj1l.onrender.com',  // Update with your front-end URL
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+
+// Set up Passport LocalStrategy
+passport.use(new LocalStrategy(User.authenticate())); // Ensure you're using the right method from passport-local-mongoose
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URL);
 
+// Routes
 app.post('/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    await User.register(new User({ username, email }), password);
-    res.sendStatus(201);
+    await User.register(new User({ username, email }), password); // This uses passport-local-mongoose's register method
+    res.sendStatus(201); // Created
   } catch (e) {
     console.log(e);
-    res.sendStatus(500);
+    res.sendStatus(500); // Internal server error
   }
 });
 
-app.post('/login', passport.authenticate('local'), (req, res) => {
-  res.status(200).json(req.user);
+app.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.status(401).json({ message: "Authentication failed" });
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      res.status(200).json(user); // Respond with the logged-in user
+    });
+  })(req, res, next);
 });
 
 app.get('/logout', (req, res) => {
@@ -78,15 +93,14 @@ app.get('/logout', (req, res) => {
 
 app.get('/api/user', (req, res) => {
   if (req.isAuthenticated()) {
-    return res.json(req.user);
+    return res.json(req.user); // Send the authenticated user
   }
   res.status(401).json({ message: "User not authenticated" });
 });
 
 app.get('/dashboard', (req, res) => {
-  console.log(req.user);
   if (req.isAuthenticated()) {
-    res.render('post');
+    res.render('post'); // Adjust with your actual route or render
   } else {
     res.redirect('/login');
   }
@@ -97,6 +111,7 @@ app.get('/api/create-room', (req, res) => {
   res.json({ roomId });
 });
 
+// Socket.io events
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
@@ -111,6 +126,7 @@ io.on("connection", (socket) => {
   });
 });
 
+// Start server
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
