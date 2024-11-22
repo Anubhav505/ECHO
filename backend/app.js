@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 
-
 const http = require("http");
 const { Server } = require("socket.io");
 const server = http.createServer(app);
@@ -12,7 +11,6 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MemoryStore = require('memorystore')(session)
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/users');
@@ -23,10 +21,12 @@ const PORT = process.env.PORT || 8080;
 app.use(session({
   secret: 'goatismonkey',
   resave: false,
-  cookie: { maxAge: 86400000 },
-  store: new MemoryStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  }),
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  },
 }));
 
 // CORS setup
