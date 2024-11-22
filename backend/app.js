@@ -11,6 +11,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/users');
@@ -22,10 +23,14 @@ app.use(session({
   secret: 'goatismonkey',
   resave: false,
   saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URL,  // MongoDB connection URL (ensure this is correct)
+    ttl: 14 * 24 * 60 * 60,  // Session expiration time (14 days)
+  }),
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-    maxAge: 1000 * 60 * 60 * 24 * 30,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,  // 30 days
+    maxAge: 1000 * 60 * 60 * 24 * 30,  // 30 days
   },
 }));
 

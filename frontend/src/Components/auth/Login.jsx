@@ -20,16 +20,18 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      // .post("http://localhost:8080/login", loginData, { withCredentials: true })
       .post("https://echo-1l8d.onrender.com/login", loginData, {
-        withCredentials: true,
+        withCredentials: true, // Keep this if you're using cookies for sessions
       })
       .then((response) => {
+        // Ensure the response is successful and contains the necessary data
         console.log(response.data);
+
+        // Navigate to the dashboard if login is successful
         navigate("/dashboard");
-        window.location.reload();
       })
       .catch((error) => {
+        // Handle any login errors
         console.error("Login failed:", error);
       });
   };
