@@ -10,7 +10,7 @@ const server = http.createServer(app);
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
-const session = require('express-session');
+const session = require('cookie-session');
 const ensureAuthenticated = require("./middlewares/authMiddleware");
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -20,13 +20,8 @@ const PORT = process.env.PORT || 8080;
 
 app.use(session({
   secret: 'goatismonkey',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-  },
+  maxAge: 1000 * 60 * 60 * 24 * 30,
+  httpOnly: true,
 }));
 
 app.use(cors({
