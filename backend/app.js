@@ -31,14 +31,14 @@ app.use(session({
 
 app.use(cors({
   // origin: 'http://localhost:5173',
-  origin: 'https://echo-8j50.onrender.com',
+  origin: 'https://echo-fj1l.onrender.com',
   credentials: true,
 }));
 
 const io = new Server(server, {
   cors: {
     // origin: "http://localhost:5173",
-    origin: 'https://echo-8j50.onrender.com',
+    origin: 'https://echo-fj1l.onrender.com',
     methods: ["GET", "POST"],
     credentials: true,
   },
