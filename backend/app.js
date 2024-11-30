@@ -11,32 +11,39 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require("connect-mongo");
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/users');
 
 const PORT = process.env.PORT || 8080;
 
-// Session middleware (ensure it's before passport middleware)
+const store = MongoStore.create({
+  mongoUrl: process.env.MONGO_URL,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+});
+store.on("error", () => {
+  console.log("ERROR in MONGO SESSION STORE", err);
+});
+
 app.use(session({
-  secret: 'goatismonkey',
+  store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URL,  // MongoDB connection URL (ensure this is correct)
-    ttl: 14 * 24 * 60 * 60,  // Session expiration time (14 days)
-  }),
   cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 30,  // 30 days
-    maxAge: 1000 * 60 * 60 * 24 * 30,  // 30 days
   },
-}));
+}))
 
 // CORS setup
 app.use(cors({
-  origin: 'https://echo-fj1l.onrender.com',  // Update with your front-end URL
+  origin: 'https://echo-fj1l.onrender.com',
   credentials: true,
 }));
 
